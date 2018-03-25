@@ -1,2 +1,10 @@
 # UMD_workshop_Rpackages
-This repository contains the files I used in the GSA Methods Workshop I thought on Writing R Packages. 
+This repository contains the files I used in the GSA Methods Workshop I thought on Writing R Packages. The workshop happened on March 25
+
+The folder has two files:
+
+- The R code where I show some review of functional programming and then how to write packages
+
+- The html file for the presentation used during the workshop. 
+
+
