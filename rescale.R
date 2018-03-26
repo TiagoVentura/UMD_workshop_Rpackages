@@ -1,6 +1,6 @@
 #' rescale_bytiago
 #'
-#' \code{function} description of your function
+#' \code{rescale_bytiago} description of your function
 #'
 #' @param \code{x} A numeric object
 #' @usage get_each_data(data="name of the data")

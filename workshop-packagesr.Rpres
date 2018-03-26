@@ -57,8 +57,24 @@ March 26
 </style>
 
 
+Overview of the workshop 
+========================================================
 
-Why writing R packages?
+1. Why are we here?
+
+2. Writing functions in R. Why? When? and How?
+
+3. Converting your functions to a package. 
+
+4. A real example: GetIRdata
+
+
+**Note**: This workshop is not about making a beautiful, perfect R package. It is about creating a bare-minimum R package. 
+
+
+
+
+Why should I write R packages?
 =========================================================
 
  + R packages are the best way to distribute R code and documentation
@@ -79,20 +95,8 @@ What did I learn writing R packages?
 
  + I improved my skills writing functions. 
 
- + I wrote a package that make me seemed smarter with some faculty
+ + I wrote a package that made gained some points with faculty
 
-
-Overview of the workshop 
-========================================================
-
-1. Writing functions in R. Why? When? and How?
-
-2. Converting your functions to a package. 
-
-3. A real example: GetIRdata
-
-
-**Note**: This workshop is not about making a beautiful, perfect R package. It is about creating a bare-minimum R package. 
 
 
 Functions
@@ -110,7 +114,7 @@ Avoid being always tweaking small components of your codes.
 
 Avoid to make mistakes with copy and pastes from one code to another
 
-To share you knowledge with your colleagues. Build you name 
+To share you knowledge with your colleagues. Build your name 
 
 To save time for your theoretical questions instead  of speeding time repeating your code. 
        
@@ -143,8 +147,7 @@ Function Fundamentals
 
 my_func <- function(arg1, arg2) {
   out
-
-}
+    }
 
 ```
 
@@ -174,29 +177,22 @@ Functions Components. Ex. One
 ===================== 
 
 The arguments
-```{r, eval=FALSE}
+```{r}
 
 formals(mean_bytiago)
-
-library(BayesTwin) # Package for Bayesian stats
-
-formals(HPD)
 
 
 ```
 
+======================
 
 The body
-```{r, eval=FALSE}
+```{r}
 body(mean_bytiago)
-
-body()
-
 
 ```
 
 =====
-
 
 Where the function is saved
 ```{r, eval=FALSE}
@@ -251,11 +247,11 @@ df <- data.frame(cbind(norm, unif))
 df$norm_0_1 <- (df$norm - min(df$norm, na.rm = TRUE)) /  
 (max(df$norm, na.rm = TRUE) - min(df$norm, na.rm = TRUE))
 
-# Plot Norm
+
 df %>% ggplot(., aes(x=norm)) + geom_density()
 
-# PloT rescaled
 df %>% ggplot(., aes(x=norm_0_1)) + geom_density()
+
 
 ```
 
@@ -268,7 +264,7 @@ The workflow for writing functions
  
 -  Find the outputs
 
- + Only one: the scaled value
+ + Only one: the rescaled value
  
 - Make it more efficient
 
@@ -285,6 +281,8 @@ rescale_bytiago <- function(x){ # one input
   (x - rng[1])/(rng[2] - rng[1])
 }
 
+
+rescale_bytiago(rnorm(10000)) 
 
 
 ```
@@ -430,8 +428,8 @@ Robust Function
 
 1. Identify the errors
 
-    if(condition) {
-    stop("Error", call. = FALSE)}
+      if(condition){
+      stop("Error", call. = FALSE)}
 
 2. Avoid the apply family
 
@@ -439,7 +437,7 @@ Robust Function
   
 =======
 
-3. Save the output in your global environment. 
+Save the output in your global environment. 
 
 ```{r, eval=FALSE}
 mean_ci <- function(x, level=0.95){ 
@@ -454,9 +452,9 @@ mean_ci <- function(x, level=0.95){
 
 =====
 
-4. Add a warning message
+Add a warning message
 
-```{r}
+```{r, eval=FALSE}
 
 mean_ci <- function(x, level=0.95){ 
   if(!is.numeric(x)){
@@ -466,10 +464,9 @@ mean_ci <- function(x, level=0.95){
   alpha <- 1 - level
   output <-mean(x) + se * qnorm(c(alpha / 2, 1 - alpha / 2))
   output.df <- data.frame(mean = mean(x), upper= output[2], lower=output[1])
-  assign("mean_ci", output.df, .GlobalEnv)
+  assign("ci_df", output.df, .GlobalEnv)
 }
 
-mean_ci("df")
 
 ```
 
@@ -510,7 +507,7 @@ Suggested Workflow
 
 **Fourth** Write the functions for your package
 
-**Fifth** Document your packages with roxygeon::document()
+**Fifth** Document your packages with devtools::document()
 
 **Fifth** Test and Share it with your colleagues!!
 
@@ -518,7 +515,7 @@ Suggested Workflow
 Creating your package
 ===============================
 
-After you have create a Rproject and a Git Rep:
+After you have created a Rproject and a Git Rep:
 
     devtools::create("Name of your package")
 
@@ -530,21 +527,23 @@ And others:
 
 - Description: Description of your package
 
-- Namespace: all the functions available in your package. Not suppose to change this directly. More important if you plan on submitting a package to CRAN.
+- Namespace: all the functions available on your package. Not suppose to change this directly. More important if you plan on submitting a package to CRAN.
 
 
-Write your function
+Write your functions
 ==================================
 
 A package is just a set of functions one created and put together. 
 
-Each function of your package is a .r file with a specific set of comments. 
+Each function of your package is a .r file with a specific set of comments.
 
-The comments are what we call the documents of your package
+Write one function per file
+
+The documentation is the explanation of your function 
 
       ?function or help(function) gives you the 
       documentation
-
+      
 
 
 Documenting your function using roxygen2
@@ -556,9 +555,9 @@ Documenting your function using roxygen2
 
 @import: Loads the entire package to use in your functions (Not recommended). 
  
-@return: What is output from the function. In this case, a data frame.
+@return: What is output from the function: numeric object, character, dataframe...
 
-@examples: Usually good to give an example of how your function is used.
+@examples: Usually good to give an example of how your function works.
 
 @export: Whether to send this function to the NAMESPACE.The last line
 
@@ -566,7 +565,22 @@ Documenting your function using roxygen2
 
 ### It's a .md file. Then, you can embed tex code!! It makes our life easier
 
-### But never change the .md directly. Show you a example latter. 
+### But never change the .md directly. 
+
+
+The rescale Example
+==============================================
+      
+      
+```{r, eval=FALSE}
+
+rescale_bytiago <- function(x){ # one input
+  rng <- range(x) # More efficient
+  (x - rng[1])/(rng[2] - rng[1])
+}
+
+```    
+
 
 
 Converting the documentation
@@ -576,7 +590,7 @@ After you are done writing your functions,  saving them in the R folder, then ca
 
 
 
-    roxygen2::document(".//package_name") 
+    devtools::document(".//package_name") 
     
 
 Importing other packages
@@ -584,7 +598,7 @@ Importing other packages
 
 The way works the best for me:
 
-- Imports: field of the DESCRIPTION file and call the function(s)
+- Imports in the description: field of the DESCRIPTION file and call the function(s)
 explicitly using ::
 
     devtools::use_package("package")
@@ -624,9 +638,29 @@ Installing
 
 
 
-Now, let's try!
+Now, let's check the GetIRdata!
 ===============
 type:section 
+
+
+
+Dowloading the packages
+=============================================
+
+
+```{r, eval=FALSE}
+
+devtools::install_github("TiagoVentura/GetIRdata")
+
+library(GetIRdata)
+
+?get_each_data
+
+get_each_data("PolityIV")
+
+
+````
+
 
 Sources
 ====================
